@@ -1,11 +1,9 @@
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-// import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { addContact } from 'redux/contactsSlice';
-import { Title } from 'components/Title/Title';
+import { FormTitle } from './FormAddContact.styled';
 import {
   StyledForm,
   FormContainer,
@@ -13,6 +11,7 @@ import {
   ErrMessage,
   Button,
 } from './FormAddContact.styled';
+import { getContacts } from 'redux/selectors';
 
 const numberPattern =
   /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/;
@@ -25,24 +24,28 @@ const ContactSchema = Yup.object().shape({
 
 export const FormAddContact = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.data);
+  const contacts = useSelector(getContacts);
 
-  const handleAddContact = newContact => {
-    let isContactExist = false;
-    if (contacts.length > 0) {
-      isContactExist = contacts.find(
-        ({ name }) => name.toLowerCase() === newContact.name.toLowerCase()
-      );
-    }
-
-    if (isContactExist) {
+  const handleSubmit = (values, actions) => {
+    if (
+      contacts.find(
+        ({ name }) => name.toLowerCase() === values.name.toLowerCase()
+      )
+    ) {
       toast.error(
-        `Name "${newContact.name.toUpperCase()}" is alredy in contacts`
+        `Contact "${values.name.toUpperCase()}" is alredy in contacts`
       );
       return;
     }
-    // setContacts(prevContacts => [...prevContacts, newContact]);
-    dispatch(addContact(newContact));
+    if (contacts.find(({ number }) => number === values.number)) {
+      toast.error(
+        `Contact with number"${values.number}" is alredy in contacts`
+      );
+      return;
+    }
+
+    dispatch(addContact(values));
+    actions.resetForm();
   };
 
   return (
@@ -52,13 +55,10 @@ export const FormAddContact = () => {
         number: '',
       }}
       validationSchema={ContactSchema}
-      onSubmit={(values, actions) => {
-        handleAddContact({ ...values, id: nanoid() });
-        actions.resetForm();
-      }}
+      onSubmit={handleSubmit}
     >
       <StyledForm>
-        <Title title="Add contact" />
+        <FormTitle>Add contact</FormTitle>
         <FormContainer>
           <div>
             <label>
@@ -91,7 +91,3 @@ export const FormAddContact = () => {
     </Formik>
   );
 };
-
-// FormAddContact.propTypes = {
-//   onSubmit: PropTypes.func.isRequired,
-// };

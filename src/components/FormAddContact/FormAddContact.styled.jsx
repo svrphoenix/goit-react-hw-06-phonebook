@@ -34,3 +34,8 @@ export const ErrMessage = styled(ErrorMessage)`
   font-size: 14px;
   color: red;
 `;
+
+export const FormTitle = styled.h2`
+  margin-top: 0;
+  margin-bottom: 1rem;
+`;
