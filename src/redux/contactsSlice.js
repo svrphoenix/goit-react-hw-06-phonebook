@@ -10,13 +10,13 @@ const persistConfig = {
 
 const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: { data: [] },
+  initialState: { items: [] },
   reducers: {
     addContact(state, action) {
-      state.data.push({ ...action.payload, id: nanoid() });
+      state.items.push({ ...action.payload, id: nanoid() });
     },
     deleteContact(state, action) {
-      state.data = state.data.filter(({ id }) => id !== action.payload);
+      state.items = state.items.filter(({ id }) => id !== action.payload);
     },
   },
 });

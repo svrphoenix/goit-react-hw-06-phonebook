@@ -3,21 +3,21 @@ import { deleteContact } from 'redux/contactsSlice';
 import { List, Contact, Button } from './ContactList.styled';
 import { getContacts, getFilter } from 'redux/selectors';
 
+const getVisibleContacts = (contacts, searchFilter) => {
+  if (contacts.length === 0) {
+    return null;
+  }
+  return contacts.filter(({ name }) =>
+    name.toLowerCase().includes(searchFilter.toLowerCase())
+  );
+};
+
 export const ContactList = () => {
   const dispatch = useDispatch();
   const contacts = useSelector(getContacts);
-  const searchFilter = useSelector(getFilter);
+  const filter = useSelector(getFilter);
 
-  const getVisibleContacts = () => {
-    if (contacts.length === 0) {
-      return null;
-    }
-    return contacts.filter(({ name }) =>
-      name.toLowerCase().includes(searchFilter.toLowerCase())
-    );
-  };
-
-  const visibleContacts = getVisibleContacts();
+  const visibleContacts = getVisibleContacts(contacts, filter);
 
   return (
     <List>
